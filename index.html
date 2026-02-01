@@ -60,6 +60,33 @@
             opacity: 0;
         }
     </style>
+    <style>
+        /* Anti-Scraping / Obfuscation */
+        body {
+            -webkit-user-select: none;
+            /* Safari */
+            -ms-user-select: none;
+            /* IE 10+ */
+            user-select: none;
+            /* Standard syntax */
+        }
+    </style>
+    <script>
+        // Best Effort Code Protection
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        document.onkeydown = function (e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (event.keyCode == 123) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        }
+
+        // Console Warning
+        console.log("%cSTOP!", "color: red; font-size: 50px; font-weight: bold;");
+        console.log("%cThis is a browser feature intended for developers. Access is restricted.", "font-size: 20px;");
+    </script>
 </head>
 
 <body class="h-screen overflow-hidden flex flex-col">
