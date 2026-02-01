@@ -1,5 +1,5 @@
 window.STRATEGY_DATA = {
-  "timestamp": "2026-02-01 12:30:56",
+  "timestamp": "2026-02-01 13:17:10",
   "symbol": "AMD",
   "market_stats": {
     "price": 236.78,
