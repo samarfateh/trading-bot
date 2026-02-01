@@ -3,6 +3,7 @@ import os
 import sys
 import logging
 from flask import Flask, send_from_directory, jsonify
+from waitress import serve
 
 # Add Flask to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -34,8 +35,6 @@ def start_bot_thread():
     logger.info("🚀 Starting Strategy Lab Bot in Background Thread...")
     
     # Simulate command line arguments for the bot
-    # We force --live and --auto-trade for the cloud instance
-    # The bot handles the logic of checking keys/safety itself
     sys.argv = ["runner.py", "--live", "--auto-trade"]
     
     try:
@@ -43,10 +42,14 @@ def start_bot_thread():
     except Exception as e:
         logger.error(f"❌ Bot crashed: {e}")
 
-# Note: The bot is now run via start.sh, not in a thread here.
-# This keeps the web server lightweight and responsive.
+# Start the bot thread immediately on import
+if not any(t.name == "BotThread" for t in threading.enumerate()):
+    t = threading.Thread(target=start_bot_thread, name="BotThread")
+    t.daemon = True
+    t.start()
+    logger.info("✅ Bot thread started")
 
 if __name__ == "__main__":
-    # Local development
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    logger.info(f"🔌 Starting Waitress Server on 0.0.0.0:{port}...")
+    serve(app, host='0.0.0.0', port=port)
