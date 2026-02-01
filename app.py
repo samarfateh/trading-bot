@@ -24,14 +24,13 @@ AUTH_PASSCODE = "EarninCeo"
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
+    default_limits=["1000 per day", "100 per hour"],
     storage_uri="memory://"
 )
 
 # Security Headers (HTTPS, CSP, etc.)
-# content_security_policy is set to None temporarily to avoid breaking inline scripts/Vue 
-# In a real strict environment, we'd hash all scripts.
-Talisman(app, content_security_policy=None, force_https=True)
+# force_https=False because Railway handles SSL termination. Setting True causes redirect loops.
+Talisman(app, content_security_policy=None, force_https=False)
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
