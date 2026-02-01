@@ -1,0 +1,7 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "python3 strategy_lab/runner.py --live --dry-run"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10

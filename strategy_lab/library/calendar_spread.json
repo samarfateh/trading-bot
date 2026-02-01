@@ -1,0 +1,35 @@
+{
+    "id": "calendar_call_low_iv",
+    "name": "Calendar Spread (Low IV)",
+    "type": "CALENDAR_SPREAD",
+    "direction": "NEUTRAL",
+    "version": "1.0",
+    "legs": [
+        {
+            "action": "SELL",
+            "type": "CALL",
+            "strike_logic": "ATM",
+            "quantity": 1,
+            "expiry": "NEAR"
+        },
+        {
+            "action": "BUY",
+            "type": "CALL",
+            "strike_logic": "ATM",
+            "quantity": 1,
+            "expiry": "FAR"
+        }
+    ],
+    "entry_rules": {
+        "trend": "SIDEWAYS",
+        "min_iv_rank": 0,
+        "max_iv_rank": 20
+    },
+    "exit_rules": {
+        "take_profit_pct": 0.30,
+        "stop_loss_pct": 0.30
+    },
+    "risk_controls": {
+        "max_loss": 300
+    }
+}

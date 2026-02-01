@@ -1,0 +1,27 @@
+{
+    "id": "long_call_momentum",
+    "name": "Long Call (Momentum)",
+    "type": "LONG_CALL",
+    "direction": "BULLISH",
+    "version": "1.0",
+    "legs": [
+        {
+            "action": "BUY",
+            "type": "CALL",
+            "strike_logic": "DELTA_50",
+            "quantity": 1
+        }
+    ],
+    "entry_rules": {
+        "trend": "UP",
+        "min_iv_rank": 0,
+        "max_iv_rank": 40
+    },
+    "exit_rules": {
+        "take_profit_pct": 1.0,
+        "stop_loss_pct": 0.30
+    },
+    "risk_controls": {
+        "max_loss": 200
+    }
+}

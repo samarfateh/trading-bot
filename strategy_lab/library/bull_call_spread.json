@@ -1,0 +1,33 @@
+{
+    "id": "bull_call_spread_trend",
+    "name": "Bull Call Spread (Trend)",
+    "type": "VERTICAL_SPREAD",
+    "direction": "BULLISH",
+    "version": "1.0",
+    "legs": [
+        {
+            "action": "BUY",
+            "type": "CALL",
+            "strike_logic": "ATM",
+            "quantity": 1
+        },
+        {
+            "action": "SELL",
+            "type": "CALL",
+            "strike_logic": "ATM+1",
+            "quantity": 1
+        }
+    ],
+    "entry_rules": {
+        "trend": "UP",
+        "min_iv_rank": 0,
+        "max_iv_rank": 50
+    },
+    "exit_rules": {
+        "take_profit_pct": 0.50,
+        "stop_loss_pct": 0.50
+    },
+    "risk_controls": {
+        "max_loss": 500
+    }
+}

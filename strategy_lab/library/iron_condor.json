@@ -1,0 +1,45 @@
+{
+    "id": "iron_condor_range",
+    "name": "Iron Condor (Neutral)",
+    "type": "IRON_CONDOR",
+    "direction": "NEUTRAL",
+    "version": "1.0",
+    "legs": [
+        {
+            "action": "SELL",
+            "type": "CALL",
+            "strike_logic": "DELTA_30",
+            "quantity": 1
+        },
+        {
+            "action": "BUY",
+            "type": "CALL",
+            "strike_logic": "DELTA_15",
+            "quantity": 1
+        },
+        {
+            "action": "SELL",
+            "type": "PUT",
+            "strike_logic": "DELTA_30",
+            "quantity": 1
+        },
+        {
+            "action": "BUY",
+            "type": "PUT",
+            "strike_logic": "DELTA_15",
+            "quantity": 1
+        }
+    ],
+    "entry_rules": {
+        "trend": "SIDEWAYS",
+        "min_iv_rank": 30,
+        "max_iv_rank": 100
+    },
+    "exit_rules": {
+        "take_profit_pct": 0.50,
+        "stop_loss_2x_credit": true
+    },
+    "risk_controls": {
+        "max_loss": 1000
+    }
+}

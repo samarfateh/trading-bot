@@ -1,0 +1,33 @@
+{
+    "id": "bear_put_spread_trend",
+    "name": "Bear Put Spread (Trend)",
+    "type": "VERTICAL_SPREAD",
+    "direction": "BEARISH",
+    "version": "1.0",
+    "legs": [
+        {
+            "action": "BUY",
+            "type": "PUT",
+            "strike_logic": "ATM",
+            "quantity": 1
+        },
+        {
+            "action": "SELL",
+            "type": "PUT",
+            "strike_logic": "ATM-1",
+            "quantity": 1
+        }
+    ],
+    "entry_rules": {
+        "trend": "DOWN",
+        "min_iv_rank": 0,
+        "max_iv_rank": 60
+    },
+    "exit_rules": {
+        "take_profit_pct": 0.50,
+        "stop_loss_pct": 0.50
+    },
+    "risk_controls": {
+        "max_loss": 500
+    }
+}

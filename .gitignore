@@ -1,0 +1,39 @@
+# .gitignore - Protect sensitive files
+
+# Alpaca API Keys (NEVER commit!)
+.env
+
+# Kill Switch Files
+STOP_TRADING.txt
+TRADING_PAUSED.txt
+
+# Database Files
+*.db
+*.db-journal
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+nohup.out
+
+# MacOS
+.DS_Store
+
+# Temporary files
+*.tmp
+/tmp/

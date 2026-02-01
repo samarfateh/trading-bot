@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calm Investor | Long-Term Focus</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="stylesheet" href="style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="logo">
+                <i class="ph-fill ph-plant"></i>
+                <span>Calm Investor</span>
+            </div>
+            <div class="settings-control">
+                <button id="mode-toggle" class="btn-icon" aria-label="Toggle Theme">
+                    <i class="ph ph-moon"></i>
+                </button>
+                <button id="settings-btn" class="btn-icon" aria-label="Settings">
+                    <i class="ph ph-gear"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- SETTINGS MODAL -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Data Settings</h3>
+                    <button id="close-modal" class="btn-text">Close</button>
+                </div>
+                <div class="modal-body">
+                    <label for="api-key-input">Finnhub API Key (Free)</label>
+                    <p class="text-sm text-secondary">Get a free key from <a href="https://finnhub.io/"
+                            target="_blank">finnhub.io</a> to see real prices.</p>
+                    <input type="text" id="api-key-input" placeholder="Enter API Key here..." class="input-field">
+                    <button id="save-api-key" class="btn-primary">Save & Reload</button>
+                    <p id="api-status" class="status-msg"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MARKET OVERVIEW -->
+        <section class="market-overview-panel">
+            <div class="status-card" id="market-status-card">
+                <div class="status-icon-wrapper">
+                    <i class="ph-fill ph-trend-up"></i>
+                </div>
+                <div class="status-text">
+                    <h2>Market Mood: <span class="highlight-good">Optimistic</span></h2>
+                    <p>The overall market is trending up. It is generally safe to stick to your long-term plan.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN GRID -->
+        <main class="dashboard-grid">
+
+            <!-- WATCHLIST SECTION -->
+            <section class="watchlist-section">
+                <div class="section-header">
+                    <h3>Your Watchlist</h3>
+                    <button class="btn-text" id="add-stock-btn">+ Add Asset</button>
+                </div>
+                <div class="stocks-grid" id="watchlist-container">
+                    <!-- Stock Cards will be injected here via JS -->
+                    <div class="loading-state">Loading assets...</div>
+                </div>
+            </section>
+
+            <!-- STRATEGY & GUIDANCE -->
+            <aside class="guidance-section">
+                <div class="guidance-card">
+                    <h3><i class="ph ph-shield-check"></i> Safety Check</h3>
+                    <ul class="hard-rules-list">
+                        <li class="pass"><i class="ph-bold ph-check"></i> No Leverage</li>
+                        <li class="pass"><i class="ph-bold ph-check"></i> Diversified</li>
+                        <li class="warn"><i class="ph-bold ph-warning"></i> Cash Buffer Low</li>
+                    </ul>
+                </div>
+            </aside>
+
+        </main>
+    </div>
+
+    <!-- DATA PROVIDER (MOCK + LIVE ADAPTER) -->
+    <script src="modules/dataService.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

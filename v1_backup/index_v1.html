@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMD Strategy Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        amd: { DEFAULT: '#ED1C24' },
+                        trade: { up: '#10B981', down: '#EF4444' },
+                        dark: { bg: '#0B0E14', panel: '#151A24', card: '#1E2532' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            background: #0B0E14;
+            color: #E5E7EB;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center p-4 font-sans">
+
+    <div id="app" class="w-full max-w-3xl flex flex-col gap-6">
+
+        <!-- HEADER -->
+        <header class="flex justify-between items-center border-b border-gray-800 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amd rounded flex items-center justify-center font-bold text-white">A</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none">AMD Strategy <span class="text-amd">Pro</span></h1>
+                    <span class="text-xs text-gray-500">Multi-Engine Options Tracker</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-2xl font-mono font-bold text-white">\${{ price.toFixed(2) }}</div>
+                <div class="flex items-center justify-end gap-2">
+                    <span class="text-[10px] text-gray-500 bg-gray-900 border border-gray-800 px-1.5 rounded">
+                        Next: {{ timeLeft }}s
+                    </span>
+                    <div class="text-sm font-mono" :class="change >= 0 ? 'text-trade-up' : 'text-trade-down'">{{ change
+                        }}%</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- TABS -->
+        <nav class="grid grid-cols-4 gap-2 bg-dark-panel p-1 rounded-xl">
+            <button @click="activeTab = 'TREND'" class="py-2 text-sm font-bold rounded-lg transition-all"
+                :class="activeTab === 'TREND' ? 'bg-gray-700 text-white shadow' : 'text-gray-500 hover:text-gray-300'">
+                TREND (Spreads)
+            </button>
+            <button @click="activeTab = 'RANGE'" class="py-2 text-sm font-bold rounded-lg transition-all"
+                :class="activeTab === 'RANGE' ? 'bg-gray-700 text-white shadow' : 'text-gray-500 hover:text-gray-300'">
+                RANGE (Condors)
+            </button>
+            <button @click="activeTab = 'CATALYST'" class="py-2 text-sm font-bold rounded-lg transition-all"
+                :class="activeTab === 'CATALYST' ? 'bg-gray-700 text-white shadow' : 'text-gray-500 hover:text-gray-300'">
+                CATALYST (Vol)
+            </button>
+            <button @click="activeTab = 'LAB'" class="py-2 text-sm font-bold rounded-lg transition-all"
+                :class="activeTab === 'LAB' ? 'bg-gray-700 text-white shadow' : 'text-gray-500 hover:text-gray-300'">
+                🧬 Strategy Lab
+            </button>
+        </nav>
+
+        <!-- MAIN STRATEGY DISPLAY -->
+        <main class="grid md:grid-cols-3 gap-6">
+
+            <!-- LEFT: Accuracy Stats -->
+            <div class="md:col-span-1 flex flex-col gap-4">
+                <h3 class="text-xs font-bold text-gray-500 uppercase">Performance</h3>
+                <accuracy-card :stats="stats[activeTab]"></accuracy-card>
+
+                <div class="bg-dark-card border border-gray-800 rounded-lg p-4 text-xs text-gray-400">
+                    <strong class="text-white block mb-2">Strategy Rules:</strong>
+                    <ul class="list-disc pl-4 space-y-1" v-if="activeTab === 'TREND'">
+                        <li>Conditions: Price > SMA20 > SMA50</li>
+                        <li>Vehicle: **Debit Spreads** (Defined Risk)</li>
+                        <li>Goal: Catch Breakouts</li>
+                    </ul>
+                    <ul class="list-disc pl-4 space-y-1" v-if="activeTab === 'RANGE'">
+                        <li>Conditions: Price near SMA50 (Low Vol)</li>
+                        <li>Vehicle: **Iron Condors**</li>
+                        <li>Goal: Fade moves > 2%</li>
+                    </ul>
+                    <ul class="list-disc pl-4 space-y-1" v-if="activeTab === 'CATALYST'">
+                        <li>Conditions: High IV Rank / Earnings</li>
+                        <li>Vehicle: **Straddles / Calendars**</li>
+                        <li>Goal: Capture Vol Expansion</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RIGHT: Active Signal -->
+            <div class="md:col-span-2 h-96">
+                <strategy-card v-if="activeTab !== 'LAB'" :strat="strategies[activeTab]"
+                    :title="activeTab + ' ENGINE'"></strategy-card>
+                <!-- LAB Content -->
+                <!-- LAB Content (New AI Interface) -->
+                <div v-if="activeTab === 'LAB'" class="animate-fade-in h-full">
+
+                    <!-- EMPTY STATE -->
+                    <div v-if="!labData"
+                        class="flex flex-col items-center justify-center h-full bg-dark-card rounded-2xl border border-gray-800 p-8 text-center">
+                        <i class="ph-duotone ph-cpu text-6xl text-gray-700 mb-4 animate-pulse"></i>
+                        <h2 class="text-xl font-bold text-gray-400">AI Brain Offline</h2>
+                        <p class="text-gray-500 mt-2 mb-6 max-w-xs">Run the Strategy Engine to activate the learning
+                            layer.</p>
+                        <code
+                            class="bg-black text-green-400 p-3 rounded text-xs font-mono">python3 strategy_lab/runner.py</code>
+                    </div>
+
+                    <!-- AI BOT INTERFACE -->
+                    <div v-else class="h-full flex flex-col gap-4">
+
+                        <!-- 1. THE RECOMMENDATION CARD -->
+                        <div
+                            class="bg-gradient-to-br from-indigo-900 to-gray-900 rounded-2xl border border-indigo-500/30 p-6 shadow-2xl relative overflow-hidden flex-1">
+
+                            <!-- Header -->
+                            <div class="flex justify-between items-start mb-6 relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/50">
+                                        <i class="ph-fill ph-robot text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-sm font-bold text-indigo-300 uppercase tracking-widest">AI
+                                            Strategy Consultant</h2>
+                                        <div class="text-xs text-indigo-400/60">Updated: {{ labData.timestamp }}</div>
+                                    </div>
+                                </div>
+                                <div v-if="labData.best_bet"
+                                    class="bg-indigo-500/20 border border-indigo-500/50 px-3 py-1 rounded-full text-indigo-300 text-xs font-bold">
+                                    {{ labData.best_bet.prediction.confidence }}% CONFIDENCE
+                                </div>
+                            </div>
+
+                            <!-- The Signal -->
+                            <div v-if="labData.best_bet" class="relative z-10">
+                                <div class="text-4xl font-black text-white mb-2 tracking-tight">
+                                    {{ labData.best_bet.strategy_name }}
+                                </div>
+                                <div class="text-lg font-medium text-indigo-200 mb-6 flex items-center gap-2">
+                                    <span
+                                        :class="labData.best_bet.direction === 'BULLISH' ? 'text-green-400' : 'text-red-400'">
+                                        {{ labData.best_bet.direction }}
+                                    </span>
+                                    <span class="text-gray-600">|</span>
+                                    <span>Target: ${{ labData.best_bet.prediction.target_price }} ({{
+                                        labData.best_bet.prediction.move_pct }}%)</span>
+                                </div>
+
+                                <!-- The Verdict (The Judge) -->
+                                <div class="bg-black/30 rounded-xl p-4 border-l-4 border-indigo-500">
+                                    <div
+                                        class="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase mb-1">
+                                        <i class="ph-bold ph-gavel"></i> The Expert Verdict
+                                    </div>
+                                    <p class="text-gray-300 text-sm leading-relaxed">
+                                        {{ labData.judge_verdict.replace("VERDICT: ", "") }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- No Signal State -->
+                            <div v-else
+                                class="relative z-10 h-40 flex flex-col items-center justify-center text-center">
+                                <i class="ph-duotone ph-shield-check text-4xl text-gray-500 mb-2"></i>
+                                <h3 class="text-xl font-bold text-white">No High-Confidence Trades</h3>
+                                <p class="text-gray-400 text-sm">Market conditions do not meet the strict safety
+                                    criteria of any strategy.</p>
+                            </div>
+
+                            <!-- Background FX -->
+                            <div
+                                class="absolute -bottom-10 -right-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none">
+                            </div>
+                        </div>
+
+                        <!-- 2. LIBRARY LINK (Footer) -->
+                        <div
+                            class="bg-dark-card rounded-xl p-3 border border-gray-800 flex justify-between items-center text-xs text-gray-400">
+                            <span>Library: {{ labData.signals.length }} matches found</span>
+                            <button class="hover:text-white underline">View All Strategies</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
