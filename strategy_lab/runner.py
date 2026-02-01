@@ -364,11 +364,11 @@ def main():
                 print("❌ Alpaca SDK not installed. Run: pip install alpaca-py")
                 return
             
-            # Check for .env configuration
-            if not os.path.exists(".env"):
-                print("❌ .env file not found! Copy .env.example and add your Alpaca keys.")
-                print("   Get free paper trading keys at: https://alpaca.markets")
-                return
+            # Check for API Keys (support both .env and Cloud Env Vars)
+            if not os.getenv("ALPACA_API_KEY"):
+                if not os.path.exists(".env"):
+                    print("❌ Alpaca Keys not found! (Check .env or Cloud Config)")
+                    return
             
             try:
                 broker = AlpacaBroker(paper_trading=True)
