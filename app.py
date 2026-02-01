@@ -43,16 +43,10 @@ def start_bot_thread():
     except Exception as e:
         logger.error(f"❌ Bot crashed: {e}")
 
-# Start the bot thread when the app starts (singleton check)
-# In Gunicorn, this runs when the worker process loads the app
-if not any(t.name == "BotThread" for t in threading.enumerate()):
-    t = threading.Thread(target=start_bot_thread, name="BotThread")
-    t.daemon = True
-    t.start()
-    logger.info("✅ Bot thread started")
+# Note: The bot is now run via start.sh, not in a thread here.
+# This keeps the web server lightweight and responsive.
 
 if __name__ == "__main__":
     # Local development
     port = int(os.environ.get("PORT", 8080))
-    logger.info(f"🔌 Binding to 0.0.0.0:{port}")
     app.run(host='0.0.0.0', port=port)
