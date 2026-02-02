@@ -40,10 +40,100 @@ logger = logging.getLogger("RailwayServer")
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Allow API access with header
+        if request.headers.get('X-Passcode') == AUTH_PASSCODE:
+            return f(*args, **kwargs)
+            
+        # Standard Session Auth
         if not session.get('authenticated'):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
+from strategy_lab.scoreboard import ScoreKeeper
+
+@app.route('/api/stats')
+@login_required
+def api_stats():
+    try:
+        keeper = ScoreKeeper()
+        stats = keeper.get_strategy_stats()
+        return jsonify({
+            "status": "success", 
+            "strategies": stats,
+            "summary": {
+                "total_pnl": sum(s['total_pnl'] for s in stats),
+                "active_count": len([s for s in stats if s['status'] == 'ACTIVE'])
+            }
+        })
+    except Exception as e:
+        logger.error(f"API Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+from trading_architect import AlphaVantageEngine
+
+@app.route('/api/scan')
+@login_required
+def api_scan():
+    """Run a market scan for a specific list of tickers."""
+    try:
+        # In a real app, this list might come from a DB or config
+        watchlist = ["AMD", "NVDA", "SPY", "QQQ", "TSLA"]
+        results = []
+        
+        # We need an API Key. Ideally from env var, defaulting for safety.
+        api_key = os.environ.get("ALPHA_VANTAGE_KEY", "POPZN5W6J3DCL2WE")
+        engine = AlphaVantageEngine(api_key=api_key)
+        
+        for symbol in watchlist:
+            forecast = engine.get_consensus_forecast(symbol)
+            if forecast['decision'] == 'BUY':
+                results.append(forecast)
+                
+        return jsonify({
+            "status": "success",
+            "signals": results,
+            "count": len(results)
+        })
+    except Exception as e:
+        logger.error(f"Scan API Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/analysis/recent_losses')
+@login_required
+def api_analysis_losses():
+    """Return details of recent losing trades for AI analysis."""
+    try:
+        import sqlite3
+        conn = sqlite3.connect('data_lake.db')
+        c = conn.cursor()
+        
+        # Fetch last 5 losing trades with strategy info
+        c.execute('''
+            SELECT 
+                t.symbol, t.strategy_id, t.entry_price, t.exit_price, t.pnl, t.entry_date
+            FROM trades t
+            WHERE t.pnl < 0 AND t.status = 'CLOSED'
+            ORDER BY t.exit_date DESC
+            LIMIT 5
+        ''')
+        
+        losses = []
+        columns = [desc[0] for desc in c.description]
+        
+        for row in c.fetchall():
+            losses.append(dict(zip(columns, row)))
+            
+        conn.close()
+        
+        return jsonify({
+            "status": "success",
+            "recent_losses": losses,
+            "context": "Analyze these trades to find common failure patterns (e.g., specific symbols or market conditions)."
+        })
+    except Exception as e:
+        logger.error(f"Analysis API Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # --- ROUTES ---
 

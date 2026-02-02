@@ -1,0 +1,38 @@
+#!/usr/bin/expect -f
+
+set timeout 600
+set password "99EarninCeo"
+set host "134.209.14.168"
+
+puts "--- 1. UPLOADING MEMORY FIX ---"
+spawn scp -o StrictHostKeyChecking=no fix_memory.sh root@$host:~/
+expect {
+    "password:" { send "$password\r"; exp_continue }
+    eof
+}
+
+puts "--- 2. APPLYING FIX & INSTALLING ---"
+spawn ssh -o StrictHostKeyChecking=no root@$host
+expect {
+    "password:" { send "$password\r"; exp_continue }
+    "#" { }
+}
+
+# Run Memory Fix
+send "chmod +x fix_memory.sh && ./fix_memory.sh\r"
+expect {
+    "Swap created" { }
+    "Swap file already exists" { }
+    "#" { }
+}
+
+# Run Installer
+puts "--- 3. RUNNING OPENCLAW INSTALLER ---"
+send "curl -fsSL https://openclaw.ai/install.sh | bash\r"
+expect {
+    "Installation complete" { }
+    "#" { }
+}
+
+send "exit\r"
+puts "--- FULL INSTALLATION COMPLETE ---"

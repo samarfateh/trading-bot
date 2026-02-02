@@ -1,5 +1,5 @@
 window.STRATEGY_DATA = {
-  "timestamp": "2026-02-01 13:32:07",
+  "timestamp": "2026-02-01 20:41:41",
   "symbol": "AMD",
   "market_stats": {
     "price": 236.78,
@@ -7,7 +7,7 @@ window.STRATEGY_DATA = {
     "day_high": 260.53,
     "day_low": 234.55,
     "volume": 115333753,
-    "panic_score": 0.88,
+    "panic_score": 0.96,
     "vix": 17.44,
     "spy_trend": "BULLISH"
   },

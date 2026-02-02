@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  trading-bot:
+    build: .
+    container_name: trading-bot
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./claw_data:/app/claw_data # Shared volume if needed, or just specific persistence
+      - ./data_lake.db:/app/data_lake.db # Persist the database
+      - ./strategy_lab:/app/strategy_lab # Optional: Map code for hot reloading if dev, but better to copy for prod.
+                                         # Actually, for a "cheap effective" setup, mapping just DB is safer.
+                                         # Let's map the DB and logs if any.
+    # No .env file referenced in user file list, but usually good practice.
+    # defaults:
+    # env_file: .env
+
+  # We are NOT including OpenClaw here as it is best managed by its own CLI 'openclaw onboard'
+  # which handles its own docker-compose stack.
+  # This separation is cleaner for updates.
